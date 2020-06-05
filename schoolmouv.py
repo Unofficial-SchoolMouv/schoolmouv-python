@@ -1,5 +1,6 @@
 """
 @author:t0pl
+Warning: gibberish code
 This tool isn't affiliated to SchoolMouv in any way
 """
 import requests
@@ -7,7 +8,6 @@ from bs4 import BeautifulSoup
 import json
 import os
 import webbrowser
-import time
 
 
 class resource:
@@ -25,23 +25,22 @@ class resource:
         # no to be used for security improvement
         pass
 
-    def download(self, url: str, into: str, save_as=None):
+    def download(self, url: str, into: str, save_as=None, overwrite=False):
         if type(url) != str:
             print(f'URL needs to be a string, not a {type(url).__name__}')
-            return
+            return False
         if not os.path.exists(into):
             print(
-                f'ain\'t such folder bro, consider changing the value passed in the \'into\' parameter')
-            return
+                f'No such folder, consider changing the value passed in the \'into\' parameter')
+            return False
         assert self.validate(url)
         _ = requests.get(url)
         assert _.status_code == 200
         save_as = self.relevant_filename(url) if save_as == None else save_as
         abs_path = os.path.abspath(os.path.join(into, save_as))
-        if os.path.exists(abs_path):
-            print(
-                f'This will overwrite existing file {abs_path}, press Ctrl+c to cancel')
-        time.sleep(2)
+        if os.path.exists(abs_path) and not overwrite:
+            print("File already exists, set overwrite to True to overwrite it anyway")
+            return False
         with open(abs_path, 'wb') as file_to_write:
             file_to_write.write(_.content)
 
@@ -56,10 +55,12 @@ class resource:
             else:
                 _ += caract
         _ = _.replace('  ', ' ')
-        return _+'pdf' if url.endswith('.pdf') else _+'.mp4'
+        return _+'.pdf' if url.endswith('.pdf') else _+'.mp4'
 
     def see(self, url: str):
-        webbrowser.open_new_tab(url)
+        success = webbrowser.open_new_tab(url)
+        if not success:
+            return success
 
 
 class video(resource):
@@ -160,8 +161,40 @@ class pdf(resource):
 
     def __init__(self, url):
         super().__init__(url)
-        self.valids = ['fiche-de-cours', 'fiche-de-revision', 'carte', 'definition', 'fiche-annale', 'lecon', 'fiche-de-lecture', 'auteur', 'formule-ses', 'fiche-methode', 'fiche-methode-bac', 'fiche-materiel', 'fiche-pratique', 'figure-de-style', 'mouvement-litteraire',
-                       'registre-litteraire', 'genre-litteraire', 'personnages-historique', 'evenement-historique', 'scientifique', 'algorithme', 'bien-rediger', 'savoir-faire', 'fiche-calculatrice', 'schema-bilan', 'demonstration', 'courant-philosophique', 'repere', 'notion', 'philosophe']
+        self.valids = [
+            'scientifique',
+            'mouvement-litteraire',
+            'schema-bilan',
+            'fiche-methode-bac',
+            'fiche-de-revision',
+            'demonstration',
+            'repere',
+            'personnages-historique',
+            'lecon',
+            'fiche-materiel',
+            'evenement-historique',
+            'savoir-faire',
+            'fiche-methode',
+            'bien-rediger',
+            'fiche-pratique',
+            'auteur',
+            'philosophe',
+            'formule-ses',
+            'figure-de-style',
+            'fiche-annale',
+            'definition',
+            'algorithme',
+            'fiche-calculatrice',
+            'courant-philosophique',
+            'fiche-methode-brevet',
+            'fiche-de-cours',
+            'genre-litteraire',
+            'registre-litteraire',
+            'carte',
+            'fiche-de-lecture',
+            'fiche-oeuvre',
+            'notion'
+        ]
         self.url = url
 
     def run(self):
