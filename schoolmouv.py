@@ -30,7 +30,8 @@ class resource:
             print(f'URL needs to be a string, not a {type(url).__name__}')
             return
         if not os.path.exists(into):
-            print(f'ain\'t such folder bro, consider changing the value passed in the \'into\' parameter')
+            print(
+                f'ain\'t such folder bro, consider changing the value passed in the \'into\' parameter')
             return
         assert self.validate(url)
         _ = requests.get(url)
@@ -46,15 +47,15 @@ class resource:
 
     def relevant_filename(self, url: str):
         _ = ''
-        __ = url.split('/')[-2].capitalize().replace('-',' ')
+        __ = url.split('/')[-2].capitalize().replace('-', ' ')
         already_done = 0
         for caract in __:
             if already_done == 0 and caract.isnumeric():
                 _ += ' '+caract
-                already_done+=1
+                already_done += 1
             else:
                 _ += caract
-        _ = _.replace('  ',' ')
+        _ = _.replace('  ', ' ')
         return _+'pdf' if url.endswith('.pdf') else _+'.mp4'
 
     def see(self, url: str):
@@ -77,19 +78,11 @@ class video(resource):
         super().__init__(url)
         self.url = url
         self.useful_headers = {
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'Accept': '*/*',
             'Accept-Encoding': 'gzip, deflate, br',
             'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.6,zh;q=0.5',
-            'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive',
             'DNT': '1',
-            'Host': 'player.vimeo.com',
-            'Pragma': 'no-cache',
             'Referer': self.url,
-            'Sec-Fetch-Dest': 'iframe',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'cross-site',
-            'Upgrade-Insecure-Requests': '1',
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4130.0 Safari/537.36'
         }
         self.basic_headers = {
